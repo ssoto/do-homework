@@ -232,13 +232,14 @@ function copyAllTasks() {
     if (tasks.length === 0) return;
     const studentName = document.getElementById('studentName')?.value.trim() || 'Estudiante';
     const date = new Date().toLocaleDateString();
+    const includeTopics = document.getElementById('includeTopicsToggle')?.checked;
 
     let text = `ENTREGA DE TAREAS\n------------------\n`;
     text += `Estudiante: ${studentName}\n`;
     text += `Fecha de entrega: ${date}\n\n`;
     text += `TAREAS:\n`;
     text += tasks.map(t => {
-        const lessons = t.lessons.length > 0 ? ` [${t.lessons.join(', ')}]` : '';
+        const lessons = (includeTopics && t.lessons.length > 0) ? ` [${t.lessons.join(', ')}]` : '';
         return `- ${t.phrase}${lessons}`;
     }).join('\n');
 

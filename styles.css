@@ -919,6 +919,23 @@ input:checked+.slider:before {
     border-radius: 50%;
 }
 
+/* Small Switch Variant */
+.switch.small {
+    width: 34px;
+    height: 18px;
+}
+
+.switch.small .slider:before {
+    height: 12px;
+    width: 12px;
+    left: 2px;
+    bottom: 2px;
+}
+
+.switch.small input:checked+.slider:before {
+    transform: translateX(16px);
+}
+
 /* Advanced Editor Styles */
 .hidden {
     display: none !important;
