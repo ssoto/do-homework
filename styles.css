@@ -786,6 +786,35 @@ textarea:focus {
     border: 2px dashed var(--accent-primary);
 }
 
+.app-title {
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-xs);
+    background: linear-gradient(135deg, #fff 0%, #e2e8f0 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+}
+
+.app-footer {
+    text-align: center;
+    padding: var(--spacing-md);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-top: var(--spacing-lg);
+}
+
+.app-footer a {
+    color: var(--accent-primary);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.app-footer a:hover {
+    color: #fca5a5;
+    text-decoration: underline;
+}
+
 /* Collapsed state for individual cards */
 .vocab-card-container.collapsed .vocab-grid {
     display: none;
