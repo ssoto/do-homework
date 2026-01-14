@@ -689,30 +689,111 @@ textarea:focus {
         align-items: start;
     }
 
-    .sticky-vocab {
+    /* Sidebar Sticky Container */
+    .left-column {
         position: sticky;
         top: 20px;
-        /* Ensure it fits in viewport */
+        /* Sidebar container takes full view height minus padding, then scrolls internally if needed or allows stacking */
         max-height: calc(100vh - 40px);
         display: flex;
         flex-direction: column;
-    }
-
-    .sticky-vocab .vocab-grid {
-        /* Take up remaining height */
-        flex: 1;
+        gap: var(--spacing-md);
         overflow-y: auto;
-        /* Redefine max-height for sidebar mode to fill card */
-        max-height: none;
+        /* Hide scrollbar for cleaner look */
+        scrollbar-width: thin;
     }
 
-    .sticky-vocab .vocab-grid.collapsed {
-        max-height: 0 !important;
-        flex: 0;
-        margin: 0;
-        padding-top: 0;
-        padding-bottom: 0;
+    .vocab-card-container {
+        display: flex;
+        flex-direction: column;
+        /* Ensure cards don't stretch indefinitely but content scrolls */
+        flex-shrink: 0;
+        max-height: 50vh;
+        /* Don't let one card take over entire height initially */
     }
+
+    .vocab-grid {
+        overflow-y: auto;
+        padding-right: 4px;
+        /* Space for scrollbar */
+    }
+}
+
+/* Header Controls */
+.section-header-compact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-left h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    border: none;
+    padding: 0;
+}
+
+.move-controls {
+    display: none;
+}
+
+.drag-handle {
+    cursor: grab;
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    padding: 0 4px;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    user-select: none;
+}
+
+.drag-handle:hover {
+    opacity: 1;
+    color: var(--accent-primary);
+}
+
+.toggle-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: var(--text-secondary);
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.toggle-btn:hover {
+    background: var(--accent-primary);
+    color: white;
+}
+
+.vocab-card-container.dragging {
+    opacity: 0.5;
+    border: 2px dashed var(--accent-primary);
+}
+
+/* Collapsed state for individual cards */
+.vocab-card-container.collapsed .vocab-grid {
+    display: none;
+}
+
+.vocab-card-container.collapsed {
+    max-height: auto;
+    flex: 0;
 }
 
 /* Mobile Fallback: ensure spacing */

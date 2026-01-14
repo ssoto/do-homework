@@ -32,15 +32,32 @@
 
         <div class="workspace-grid">
             <!-- Left Column: Vocabulary -->
-            <aside class="left-column">
-                <section class="vocabulary-section glass-card sticky-vocab">
-                    <div class="vocab-header" onclick="toggleVocab()">
-                        <h2>📚 Vocabulario</h2>
-                        <span id="vocabToggleIcon">▲</span>
+            <aside class="left-column" id="leftSidebar">
+                <!-- Words Section -->
+                <section id="wordsCard" class="glass-card vocab-card-container" draggable="true">
+                    <div class="section-header-compact">
+                        <div class="header-left">
+                            <span class="drag-handle" title="Arrastrar para mover">⋮⋮</span>
+                            <h2>📚 Vocabulario</h2>
+                        </div>
+                        <button class="toggle-btn" onclick="toggleCard('wordsCard')">▼</button>
                     </div>
-                    <!-- Removed .collapsed by default for visibility in side-by-side mode -->
-                    <div id="vocabularyContainer" class="vocab-grid">
+                    <div id="wordsListContainer" class="vocab-grid">
                         <p class="loading-text">Cargando palabras...</p>
+                    </div>
+                </section>
+
+                <!-- Verbs Section -->
+                <section id="verbsCard" class="glass-card vocab-card-container" draggable="true">
+                    <div class="section-header-compact">
+                        <div class="header-left">
+                            <span class="drag-handle" title="Arrastrar para mover">⋮⋮</span>
+                            <h2>🔥 Verbos</h2>
+                        </div>
+                        <button class="toggle-btn" onclick="toggleCard('verbsCard')">▼</button>
+                    </div>
+                    <div id="verbsListContainer" class="vocab-grid">
+                        <p class="loading-text">Cargando verbos...</p>
                     </div>
                 </section>
             </aside>

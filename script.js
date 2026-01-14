@@ -273,9 +273,14 @@ function escapeHtml(text) {
 // --- Vocabulary Logic ---
 
 async function loadVocabulary() {
-    const container = document.getElementById('vocabularyContainer');
-    if (!container) return;
-    container.innerHTML = '';
+    const wordsContainer = document.getElementById('wordsListContainer');
+    const verbsContainer = document.getElementById('verbsListContainer');
+
+    // Safety check
+    if (!wordsContainer || !verbsContainer) return;
+
+    wordsContainer.innerHTML = '';
+    verbsContainer.innerHTML = '';
 
     try {
         // Load Words
@@ -283,7 +288,9 @@ async function loadVocabulary() {
         if (wordsRes.ok) {
             const text = await wordsRes.text();
             const data = parseWordsCSV(text);
-            renderVocabulary(data, container);
+            renderVocabulary(data, wordsContainer);
+        } else {
+            wordsContainer.innerHTML = '<p class="error-msg">No se pudo cargar.</p>';
         }
 
         // Load Verbs
@@ -291,12 +298,15 @@ async function loadVocabulary() {
         if (verbsRes.ok) {
             const text = await verbsRes.text();
             const verbs = parseVerbsCSV(text);
-            if (verbs.length) renderVerbs("🔥 Verbos de Repaso", verbs, container);
+            // Render verbs independently
+            renderVerbs("Lista de Verbos", verbs, verbsContainer);
+        } else {
+            verbsContainer.innerHTML = '<p class="error-msg">No se pudo cargar.</p>';
         }
 
     } catch (e) {
         console.error('Data load error', e);
-        container.innerHTML += '<p class="error-msg">Error cargando datos.</p>';
+        if (wordsContainer) wordsContainer.innerHTML += '<p class="error-msg">Error cargando.</p>';
     }
 }
 
@@ -331,6 +341,7 @@ function parseVerbsCSV(text) {
 }
 
 function renderVocabulary(data, container) {
+    // Sort sections alphabetically if desired, or keep insertion order
     for (const [section, items] of Object.entries(data)) {
         const group = document.createElement('div');
         group.className = 'vocab-group';
@@ -358,27 +369,23 @@ function renderVocabulary(data, container) {
 }
 
 function renderVerbs(title, listData, container) {
-    const group = document.createElement('div');
-    group.className = 'vocab-group collapsed';
+    // For verbs, we might just put them all in one big list or group by letter if huge.
+    // Given the request, just listed alphabetically is fine.
 
-    const h3 = document.createElement('h3');
-    h3.textContent = `${title} (${listData.length})`;
-    h3.onclick = () => group.classList.toggle('collapsed');
-    group.appendChild(h3);
-
-    const ul = document.createElement('ul');
-    ul.className = 'vocab-list';
+    // We can wrap them in a pseudo-group so they look consistent, OR just direct list.
+    // Let's use a single open group to match style.
+    const list = document.createElement('ul');
+    list.className = 'vocab-list';
 
     listData.forEach(word => {
         const li = document.createElement('li');
         li.className = 'vocab-item verb-item';
         li.textContent = word;
         li.onclick = () => addToPhrase(word);
-        ul.appendChild(li);
+        list.appendChild(li);
     });
 
-    group.appendChild(ul);
-    container.appendChild(group);
+    container.appendChild(list);
 }
 
 function addToPhrase(text) {
@@ -389,16 +396,63 @@ function addToPhrase(text) {
     lastFocusedInput.focus();
 }
 
-function toggleVocab() {
-    const container = document.getElementById('vocabularyContainer');
-    const icon = document.getElementById('vocabToggleIcon');
-    if (container) container.classList.toggle('collapsed');
-    if (icon && container) {
-        const isCollapsed = container.classList.contains('collapsed');
-        icon.textContent = isCollapsed ? '▼' : '▲';
-        icon.style.transform = isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)';
-        icon.style.display = 'inline-block';
+// --- Card Management UI ---
+function toggleCard(cardId) {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+
+    card.classList.toggle('collapsed');
+    const btn = card.querySelector('.toggle-btn');
+    if (btn) {
+        btn.textContent = card.classList.contains('collapsed') ? '▼' : '▲';
+        btn.style.transform = card.classList.contains('collapsed') ? 'rotate(0deg)' : 'rotate(180deg)';
     }
 }
-// Expose toggleVocab
-window.toggleVocab = toggleVocab;
+window.toggleCard = toggleCard;
+
+// Drag and Drop Logic
+document.addEventListener('DOMContentLoaded', () => {
+    // ... previous listeners ...
+
+    const draggables = document.querySelectorAll('.vocab-card-container');
+    const leftSidebar = document.getElementById('leftSidebar');
+
+    if (leftSidebar && draggables.length) {
+        draggables.forEach(draggable => {
+            draggable.addEventListener('dragstart', () => {
+                draggable.classList.add('dragging');
+            });
+
+            draggable.addEventListener('dragend', () => {
+                draggable.classList.remove('dragging');
+            });
+        });
+
+        leftSidebar.addEventListener('dragover', e => {
+            e.preventDefault(); // Enable dropping
+            const afterElement = getDragAfterElement(leftSidebar, e.clientY);
+            const draggable = document.querySelector('.dragging');
+            if (draggable) {
+                if (afterElement == null) {
+                    leftSidebar.appendChild(draggable);
+                } else {
+                    leftSidebar.insertBefore(draggable, afterElement);
+                }
+            }
+        });
+    }
+});
+
+function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.vocab-card-container:not(.dragging)')];
+
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+        } else {
+            return closest;
+        }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
